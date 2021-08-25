@@ -33,9 +33,11 @@ const ConnectPage = () => {
       if (error) {
         throw error;
       }
+
+      console.log("<<<<<<< disconnect >>>>>>>");
     });
 
-    console.log("<<<<<<< disconnect >>>>>>>");
+    setConnector(connector);
   };
 
   React.useEffect(() => {
