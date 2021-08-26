@@ -171,9 +171,11 @@ const ConnectButton = styled.button`
 `;
 
 const Title = styled.h1`
+  text-align: center;
   font-weight: 800;
 `;
 
 const Text = styled.span`
   margin-top: 30px;
+  word-break: break-word;
 `;
