@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 
-// import WalletConnect from "@walletconnect/client";
 import QRCodeModal from "@walletconnect/qrcode-modal";
 
 import Web3 from "web3";
@@ -9,65 +8,15 @@ import { useWeb3React, UnsupportedChainIdError } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 
+const bridge = process.env.REACT_APP_BRIDGE_SERVER || "https://bridge.walletconnect.org";
+
 const injected = new InjectedConnector({
   supportedChainIds: [1, 3, 4, 5, 42, 56, 97, 137, 80001],
-});
-
-const walletconnect = new WalletConnectConnector({
-  rpc: { 1: process.env.REACT_APP_INFURA_URL || "" },
-  bridge: process.env.REACT_APP_BRIDGE_SERVER || "https://bridge.walletconnect.org",
-  qrcodeModal: QRCodeModal,
 });
 
 const ConnectPage = () => {
   const { activate, account, library } = useWeb3React();
   const [state, setState] = React.useState<string>("");
-
-  // const [connector, setConnector] = React.useState<WalletConnect | undefined>();
-  // const subscribeToEvents = (connector: WalletConnect) => {
-  //   console.log("=========================", connector);
-
-  //   if (!connector) {
-  //     return;
-  //   }
-
-  //   connector.on("session_update", async (error, payload) => {
-  //     if (error) {
-  //       throw error;
-  //     }
-
-  //     const { chainId, accounts } = payload.params[0];
-  //     console.log("<<<<<<< session_update >>>>>>>", chainId, accounts);
-  //   });
-
-  //   connector.on("connect", (error, payload) => {
-  //     if (error) {
-  //       throw error;
-  //     }
-
-  //     console.log("<<<<<<< connect >>>>>>>");
-  //   });
-
-  //   connector.on("disconnect", (error, payload) => {
-  //     if (error) {
-  //       throw error;
-  //     }
-
-  //     console.log("<<<<<<< disconnect >>>>>>>");
-  //   });
-
-  //   setConnector(connector);
-  // };
-
-  // React.useEffect(() => {
-  //   const createSession = async () => {
-  //     if (connector && !connector.connected) {
-  //       await connector.createSession();
-  //     }
-  //   };
-
-  //   createSession();
-  // }, [connector]);
 
   React.useEffect(() => {
     if (account && account.length > 0) {
@@ -118,6 +67,12 @@ const ConnectPage = () => {
   }, [account, library?.provider]);
 
   const connectWalletConnect = async () => {
+    const walletconnect = new WalletConnectConnector({
+      rpc: { 1: process.env.REACT_APP_INFURA_URL || "" },
+      bridge,
+      qrcodeModal: QRCodeModal,
+    });
+    
     activate(walletconnect, undefined, true).catch((error) => {
       if (error instanceof UnsupportedChainIdError) {
         activate(walletconnect);
@@ -125,12 +80,6 @@ const ConnectPage = () => {
         console.info("Connection Error - ", error);
       }
     });
-    // const bridge = "wss://wc-bridge-5qt5i.ondigitalocean.app:443";
-
-    // // create new connector
-    // const connector = new WalletConnect({ bridge, qrcodeModal: QRCodeModal });
-    // await connector.createSession();
-    // subscribeToEvents(connector);
   };
 
   const connectMetamask = async () => {
@@ -148,7 +97,9 @@ const ConnectPage = () => {
     <Container>
       <Title>Welcome to our test app</Title>
       <ConnectButton onClick={connectMetamask}>Connect MetaMask</ConnectButton>
-      <ConnectButton onClick={connectWalletConnect}>Connect WalletConnect</ConnectButton>
+      <ConnectButton onClick={connectWalletConnect}>
+        Connect WalletConnect
+      </ConnectButton>
       <Text>{state}</Text>
     </Container>
   );
