@@ -8,7 +8,8 @@ import { useWeb3React, UnsupportedChainIdError } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 
-const bridge = process.env.REACT_APP_BRIDGE_SERVER || "https://bridge.walletconnect.org";
+const bridge =
+  process.env.REACT_APP_BRIDGE_SERVER || "https://bridge.walletconnect.org";
 
 const injected = new InjectedConnector({
   supportedChainIds: [1, 3, 4, 5, 42, 56, 97, 137, 80001],
@@ -20,46 +21,76 @@ const ConnectPage = () => {
 
   React.useEffect(() => {
     if (account && account.length > 0) {
-      const web3 = new Web3(library.provider);
-      const msgParams = JSON.stringify({
-        types: {
-          EIP712Domain: [
-            { name: "name", type: "string" },
-            { name: "version", type: "string" },
-          ],
-          Mail: [
-            { name: "Address", type: "address" },
-            { name: "Nonce", type: "string" },
-          ],
-        },
-        primaryType: "Mail",
-        domain: {
-          name: "Privi Pix",
-          version: "1.0.0-beta",
-        },
-        message: {
-          Address: account,
-          Nonce: "0x123456789",
-        },
-      });
-      let params = [account, msgParams];
-      let method = "eth_signTypedData_v3";
-      const provider = web3.currentProvider;
+      // const web3 = new Web3(library.provider);
+      // const msgParams = JSON.stringify({
+      //   types: {
+      //     EIP712Domain: [
+      //       { name: "name", type: "string" },
+      //       { name: "version", type: "string" },
+      //     ],
+      //     Mail: [
+      //       { name: "Address", type: "address" },
+      //       { name: "Nonce", type: "string" },
+      //     ],
+      //   },
+      //   primaryType: "Mail",
+      //   domain: {
+      //     name: "Privi Pix",
+      //     version: "1.0.0-beta",
+      //   },
+      //   message: {
+      //     Address: account,
+      //     Nonce: "0x123456789",
+      //   },
+      // });
+      // let params = [account, msgParams];
+      // let method = "eth_signTypedData_v3";
+      // const provider = web3.currentProvider;
 
-      (provider as any).sendAsync(
+      // (provider as any).sendAsync(
+      //   {
+      //     method,
+      //     params,
+      //     from: account,
+      //   },
+      //   function (err: any, result: any) {
+      //     console.log("sign error", err);
+      //     if (result.error) {
+      //       console.log("sign err", result.error);
+      //     }
+      //     if (result.result) {
+      //       console.log("success", result.result);
+      //       setState("Success: " + result.result);
+      //     }
+      //   }
+      // );
+      const isDev = true;
+      const chainId = isDev ? "0x3" : "0x38";
+      const rpcUrl = isDev
+        ? "https://ropsten.infura.io/v3/eda1216d6a374b3b861bf65556944cdb/"
+        : "https://bsc-dataseed.binance.org/";
+
+      (library.provider as any).sendAsync(
         {
-          method,
-          params,
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId }],
           from: account,
         },
         function (err: any, result: any) {
-          console.log("sign error", err);
-          if (result.error) {
-            console.log("sign err", result.error);
-          }
-          if (result.result) {
-            console.log("success", result.result);
-            setState("Success: " + result.result);
+          console.log("err", err);
+          console.log("result", result);
+          if (err && err.code === 4902) {
+            (library.provider as any).sendAsync(
+              {
+                method: "wallet_addEthereumChain",
+                params: [{ chainId, rpcUrl }],
+                from: account,
+              },
+              function (err: any, result: any) {
+                console.log("err", err);
+                console.log("result", result);
+              }
+            );
           }
         }
       );
@@ -72,7 +103,7 @@ const ConnectPage = () => {
       bridge,
       qrcodeModal: QRCodeModal,
     });
-    
+
     activate(walletconnect, undefined, true).catch((error) => {
       if (error instanceof UnsupportedChainIdError) {
         activate(walletconnect);
