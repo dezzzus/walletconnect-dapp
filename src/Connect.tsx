@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import QRCodeModal from "@walletconnect/qrcode-modal";
 
-import Web3 from "web3";
+// import Web3 from "web3";
 import { useWeb3React, UnsupportedChainIdError } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
@@ -17,7 +17,7 @@ const injected = new InjectedConnector({
 
 const ConnectPage = () => {
   const { activate, account, library } = useWeb3React();
-  const [state, setState] = React.useState<string>("");
+  const [state] = React.useState<string>("");
 
   React.useEffect(() => {
     if (account && account.length > 0) {
