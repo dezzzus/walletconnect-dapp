@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import QRCodeModal from "@walletconnect/qrcode-modal";
 
-// import Web3 from "web3";
+import Web3 from "web3";
 import { useWeb3React, UnsupportedChainIdError } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
@@ -21,7 +21,7 @@ const ConnectPage = () => {
 
   React.useEffect(() => {
     if (account && account.length > 0) {
-      // const web3 = new Web3(library.provider);
+      const web3 = new Web3(library.provider);
       // const msgParams = JSON.stringify({
       //   types: {
       //     EIP712Domain: [
@@ -45,7 +45,7 @@ const ConnectPage = () => {
       // });
       // let params = [account, msgParams];
       // let method = "eth_signTypedData_v3";
-      // const provider = web3.currentProvider;
+      const provider = web3.currentProvider;
 
       // (provider as any).sendAsync(
       //   {
@@ -70,7 +70,7 @@ const ConnectPage = () => {
         ? "https://ropsten.infura.io/v3/eda1216d6a374b3b861bf65556944cdb/"
         : "https://bsc-dataseed.binance.org/";
 
-      (library.provider as any).sendAsync(
+      (provider as any).sendAsync(
         {
           method: "wallet_switchEthereumChain",
           params: [{ chainId }],
@@ -80,7 +80,7 @@ const ConnectPage = () => {
           console.log("err", err);
           console.log("result", result);
           if (err && err.code === 4902) {
-            (library.provider as any).sendAsync(
+            (provider as any).sendAsync(
               {
                 method: "wallet_addEthereumChain",
                 params: [{ chainId, rpcUrl }],
