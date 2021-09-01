@@ -73,7 +73,8 @@ const ConnectPage = () => {
       (provider as any).sendAsync(
         {
           method: "wallet_switchEthereumChain",
-          params: [JSON.stringify({ chainId })],
+          // params: [JSON.stringify({ chainId })],
+          params: [{ chainId }],
           // from: account,
         },
         function (err: Error, result: any) {
@@ -94,7 +95,7 @@ const ConnectPage = () => {
           //   );
           // }
         }
-      )
+      );
     }
   }, [account, library?.provider]);
 
