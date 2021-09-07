@@ -14,16 +14,16 @@ const injected = new InjectedConnector({
   supportedChainIds: [1, 3, 4, 5, 42, 56, 97, 137, 80001],
 });
 
-const chainChanged = (error: Error, payload: any) => {
-  if (error) {
-    console.error(error);
-    throw error;
-  }
+// const chainChanged = (error: Error, payload: any) => {
+//   if (error) {
+//     console.error(error);
+//     throw error;
+//   }
 
-  // Get updated accounts and chainId
-  const { accounts, chainId } = payload.params[0];
-  console.log("333333333", accounts, chainId);
-};
+//   // Get updated accounts and chainId
+//   const { accounts, chainId } = payload.params[0];
+//   console.log("333333333", accounts, chainId);
+// };
 
 const chainChanged1 = (chainId: number) => {
   console.log("444444444", chainId);
@@ -31,7 +31,8 @@ const chainChanged1 = (chainId: number) => {
 
 const ConnectPage = () => {
   const { activate, account, library } = useWeb3React();
-  const [state, setState] = React.useState<string>("");
+  // const [state, setState] = React.useState<string>("");
+  const [state] = React.useState<string>("");
 
   React.useEffect(() => {
     if (account && account.length > 0) {
@@ -79,40 +80,40 @@ const ConnectPage = () => {
       //   }
       // );
 
-      const isDev = true;
-      const chainId = isDev ? "0x3" : "0x38";
-      const rpcUrl = isDev
-        ? "https://ropsten.infura.io/v3/eda1216d6a374b3b861bf65556944cdb/"
-        : "https://bsc-dataseed.binance.org/";
+      // const isDev = true;
+      // const chainId = isDev ? "0x3" : "0x38";
+      // const rpcUrl = isDev
+      //   ? "https://ropsten.infura.io/v3/eda1216d6a374b3b861bf65556944cdb/"
+      //   : "https://bsc-dataseed.binance.org/";
 
-      (provider as any).on("session_update", chainChanged);
+      // (provider as any).on("session_update", chainChanged);
       (provider as any).on("chainChanged", chainChanged1);
 
-      (provider as any).sendAsync(
-        {
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId }],
-          from: account,
-        },
-        function (err: Error, result: any) {
-          console.log("err", err);
-          console.log("result", result);
-          setState("Success: " + result.result);
-          if (err) {
-            (provider as any).sendAsync(
-              {
-                method: "wallet_addEthereumChain",
-                params: [{ chainId, rpcUrl }],
-                from: account,
-              },
-              function (err: any, result: any) {
-                console.log("err", err);
-                console.log("result", result);
-              }
-            );
-          }
-        }
-      );
+      // (provider as any).sendAsync(
+      //   {
+      //     method: "wallet_switchEthereumChain",
+      //     params: [{ chainId }],
+      //     from: account,
+      //   },
+      //   function (err: Error, result: any) {
+      //     console.log("err", err);
+      //     console.log("result", result);
+      //     setState("Success: " + result.result);
+      //     if (err) {
+      //       (provider as any).sendAsync(
+      //         {
+      //           method: "wallet_addEthereumChain",
+      //           params: [{ chainId, rpcUrl }],
+      //           from: account,
+      //         },
+      //         function (err: any, result: any) {
+      //           console.log("err", err);
+      //           console.log("result", result);
+      //         }
+      //       );
+      //     }
+      //   }
+      // );
     }
   }, [account, library?.provider]);
 
