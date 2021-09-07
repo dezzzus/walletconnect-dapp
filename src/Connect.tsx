@@ -26,13 +26,12 @@ const injected = new InjectedConnector({
 // };
 
 const chainChanged1 = (chainId: number) => {
-  console.log("444444444", chainId);
+  console.log("4444444444", chainId);
 };
 
 const ConnectPage = () => {
-  const { activate, account, library } = useWeb3React();
-  // const [state, setState] = React.useState<string>("");
-  const [state] = React.useState<string>("");
+  const { activate, account, library, chainId } = useWeb3React();
+  const [state, setState] = React.useState<string>("");
 
   React.useEffect(() => {
     if (account && account.length > 0) {
@@ -116,6 +115,13 @@ const ConnectPage = () => {
       // );
     }
   }, [account, library?.provider]);
+
+  React.useEffect(() => {
+    if(chainId) {
+      setState('chainId is ' + chainId);
+    }
+    console.log("5555555555", chainId);
+  }, [chainId]);
 
   const connectWalletConnect = async () => {
     const walletconnect = new WalletConnectConnector({
