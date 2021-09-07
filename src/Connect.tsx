@@ -8,11 +8,22 @@ import { useWeb3React, UnsupportedChainIdError } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 
-const bridge = "https://bridge.walletconnect.org";
+const bridge = "wss://wc-bridge-5qt5i.ondigitalocean.app:443";
 
 const injected = new InjectedConnector({
   supportedChainIds: [1, 3, 4, 5, 42, 56, 97, 137, 80001],
 });
+
+const chainChanged = (error: Error, payload: any) => {
+  if (error) {
+    console.error(error);
+    throw error;
+  }
+
+  // Get updated accounts and chainId
+  const { accounts, chainId } = payload.params[0];
+  console.log("333333333", accounts, chainId);
+};
 
 const ConnectPage = () => {
   const { activate, account, library } = useWeb3React();
@@ -70,30 +81,31 @@ const ConnectPage = () => {
         ? "https://ropsten.infura.io/v3/eda1216d6a374b3b861bf65556944cdb/"
         : "https://bsc-dataseed.binance.org/";
 
+      library.provider.on("session_update", chainChanged);
+
       (provider as any).sendAsync(
         {
           method: "wallet_switchEthereumChain",
-          // params: [JSON.stringify({ chainId })],
           params: [{ chainId }],
-          // from: account,
+          from: account,
         },
         function (err: Error, result: any) {
           console.log("err", err);
           console.log("result", result);
-          // setState("Success: " + result.result);
-          // if (err) {
-          //   (provider as any).sendAsync(
-          //     {
-          //       method: "wallet_addEthereumChain",
-          //       params: [{ chainId, rpcUrl }],
-          //       from: account,
-          //     },
-          //     function (err: any, result: any) {
-          //       console.log("err", err);
-          //       console.log("result", result);
-          //     }
-          //   );
-          // }
+          setState("Success: " + result.result);
+          if (err) {
+            (provider as any).sendAsync(
+              {
+                method: "wallet_addEthereumChain",
+                params: [{ chainId, rpcUrl }],
+                from: account,
+              },
+              function (err: any, result: any) {
+                console.log("err", err);
+                console.log("result", result);
+              }
+            );
+          }
         }
       );
     }
@@ -106,6 +118,7 @@ const ConnectPage = () => {
         3: "https://ropsten.infura.io/v3/eda1216d6a374b3b861bf65556944cdb",
         56: "https://bsc-dataseed.binance.org",
       },
+      supportedChainIds: [1, 3, 4, 5, 42, 56, 97, 137, 80001],
       bridge,
       qrcodeModal: QRCodeModal,
     });
