@@ -25,6 +25,10 @@ const chainChanged = (error: Error, payload: any) => {
   console.log("333333333", accounts, chainId);
 };
 
+const chainChanged1 = (chainId: number) => {
+  console.log("444444444", chainId);
+};
+
 const ConnectPage = () => {
   const { activate, account, library } = useWeb3React();
   const [state, setState] = React.useState<string>("");
@@ -81,7 +85,8 @@ const ConnectPage = () => {
         ? "https://ropsten.infura.io/v3/eda1216d6a374b3b861bf65556944cdb/"
         : "https://bsc-dataseed.binance.org/";
 
-      library.provider.on("session_update", chainChanged);
+      (provider as any).on("session_update", chainChanged);
+      (provider as any).on("chainChanged", chainChanged1);
 
       (provider as any).sendAsync(
         {
